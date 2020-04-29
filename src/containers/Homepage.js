@@ -1,12 +1,14 @@
 import React from 'react';
 import dogs from "../dogsdata";
-import {Button} from "reactstrap";
-import FavoriteActions from "../components/FavoriteActions";
+import {Container} from "reactstrap";
+
+
 import Dog from "../components/Dog";
 import axios from "axios";
 
 
-const apiHost = "MOCK API URL";
+const apiHost = "https://5eaa084fa873660016721031.mockapi.io";
+
 
 class Homepage extends React.Component {
     constructor(props){
@@ -14,9 +16,11 @@ class Homepage extends React.Component {
 
         this.state = {
             favorites: [],
-            loadingFavorites: false
+            loadingFavorites: false,
+            clickFavorites: false,
         }
     }
+
     componentDidMount() {
         // localstoragedan getirme
 /*        this.setState({
@@ -43,24 +47,34 @@ class Homepage extends React.Component {
     toggle = (dogId)=>{
         const foundDog = this.state.favorites.find((favorite) => favorite.dogId === dogId);
         if(foundDog){
+            this.setState({
+                clickFavorites: true
+            }, () => {
             axios.delete(`${apiHost}/favorites/${foundDog.id}`).then((result) => {
                 this.setState(({
-                    favorites: this.state.favorites.filter((dog) => dog.dogId !== dogId)
+                    favorites: this.state.favorites.filter((dog) => dog.dogId !== dogId),
+                    clickFavorites: false
                 }))
             }).catch((err) => {
                 console.log(err);
             });
+            })
         }else{
             // window.localStorage.setItem("favorites", JSON.stringify(this.state.favorites));
+            this.setState({
+                clickFavorites: true
+            }, () => {
             axios.post(`${apiHost}/favorites`, {
                 dogId
             }).then((result) => {
                 const eklenenFavori = result.data; // {id: 1, dogId: benim yolladigim dog id, createdat: date}
                 this.setState({
-                    favorites: [...this.state.favorites, eklenenFavori]
+                    favorites: [...this.state.favorites, eklenenFavori],
+                    clickFavorites: false
                 })
             }).catch((err) => {
                 console.log(err);
+            })
             })
         }
     }
@@ -70,23 +84,29 @@ class Homepage extends React.Component {
         return foundDog;
     }
 
+    
+    
     render(){
         if(this.state.loadingFavorites){
             return <div>
                 <h1>Sayfa Yukleniyor.....</h1>
             </div>
         }
+        
         return (
-            <div>
-                <ul>
-                    {
-                        dogs.map((dog) => {
-                            return <Dog toggle={this.toggle} id={dog.id} getStatus={this.getStatus} {...dog}/>
-                        })
-                    }
-                </ul>
-            </div>
+            <>
+            <Container>
+                {
+                    dogs.map((dog) => {
+                        return (
+                            <Dog clickFavorites={this.state.clickFavorites} toggle={this.toggle} id={dog.id} getStatus={this.getStatus} {...dog}/>
+                        );
+                    })
+                }          
+            </Container> 
+            </>
         );
+        
     }
 }
 
