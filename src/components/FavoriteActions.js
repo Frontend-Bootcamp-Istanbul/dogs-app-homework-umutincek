@@ -6,8 +6,8 @@ const FavoriteActions = (props) => {
         <div>
             {
                 props.getStatus(props.id) ?
-                    <Button color="danger" onClick={() => {props.toggle(props.id)}}>Favorilerden Cikar</Button>
-                    : <Button color="primary" onClick={() => {props.toggle(props.id)}}>Favoriye Ekle</Button>
+                    <Button disabled={props.clickFavorites} color="danger" onClick={() => {props.toggle(props.id)}}>Favorilerden Cikar</Button>
+                    : <Button disabled={props.clickFavorites} color="primary" onClick={() => {props.toggle(props.id)}}>Favoriye Ekle</Button>
             }
         </div>
     );
